@@ -76,6 +76,17 @@ typedef enum zathura_document_information_type_e
 } zathura_document_information_type_t;
 
 /**
+ * Margins
+ */
+typedef enum zathura_margin_e
+{
+  ZATHURA_MARGIN_TOP,
+  ZATHURA_MARGIN_RIGHT,
+  ZATHURA_MARGIN_BOTTOM,
+  ZATHURA_MARGIN_LEFT,
+} zathura_margin_t;
+
+/**
   * Plugin
   */
 typedef struct zathura_plugin_s zathura_plugin_t;

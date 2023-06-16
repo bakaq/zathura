@@ -425,4 +425,21 @@ ZATHURA_PLUGIN_API zathura_error_t zathura_document_attachment_save(zathura_docu
  */
 ZATHURA_PLUGIN_API girara_list_t* zathura_document_get_information(zathura_document_t* document, zathura_error_t* error);
 
+/**
+ * Returns value of margin crop of specified margin
+ *
+ * @param document The zathura document
+ * @param margin The margin
+ * @return Margin
+*/
+unsigned int zathura_document_get_margin_crop(zathura_document_t* document, zathura_margin_t margin);
+
+/**
+ * Sets the document margin_crop
+ *
+ * @param document The zathura document
+ * @param margins An array with the margins
+*/
+void zathura_document_set_margin_crop(zathura_document_t* document, unsigned int margins[4]);
+
 #endif // DOCUMENT_H

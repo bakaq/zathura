@@ -45,6 +45,7 @@ struct zathura_document_s {
   unsigned int page_padding; /**< padding between pages */
   double position_x; /**< X adjustment */
   double position_y; /**< Y adjustment */
+  unsigned int margin_crop[4]; /**< Margins to crop {top, right, bottom, left} */
 
   /**
    * Document pages
@@ -174,6 +175,10 @@ zathura_document_open(zathura_t* zathura, const char* path, const char* uri,
   document->device_factors.y = 1.0;
   document->position_x  = 0.0;
   document->position_y  = 0.0;
+  document->margin_crop[0] = 0;
+  document->margin_crop[1] = 0;
+  document->margin_crop[2] = 0;
+  document->margin_crop[3] = 0;
 
   real_path = NULL;
   g_object_unref(file);
@@ -795,4 +800,24 @@ zathura_document_get_plugin(zathura_document_t* document)
   }
 
   return document->plugin;
+}
+
+unsigned int
+zathura_document_get_margin_crop(zathura_document_t* document, zathura_margin_t margin)
+{
+  if (document == NULL) {
+    return 0;
+  }
+  return document->margin_crop[margin];
+}
+
+void
+zathura_document_set_margin_crop(zathura_document_t* document, unsigned int margins[4])
+{
+  if (document == NULL) {
+    return;
+  }
+  for (int i = 0; i < 4; i++) {
+      document->margin_crop[i] = margins[i];
+  }
 }

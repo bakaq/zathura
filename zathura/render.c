@@ -765,7 +765,23 @@ invoke_completed_signal(render_job_t* job, cairo_surface_t* surface)
 static bool
 render_to_cairo_surface(cairo_surface_t* surface, zathura_page_t* page, ZathuraRenderer* renderer, double real_scale)
 {
-  cairo_t* cairo = cairo_create(surface);
+  cairo_format_t format = cairo_image_surface_get_format(surface);
+  unsigned int width = cairo_image_surface_get_width(surface);
+  unsigned int height = cairo_image_surface_get_height(surface);
+
+  zathura_document_t *document = zathura_page_get_document(page);
+  width += zathura_document_get_margin_crop(document, ZATHURA_MARGIN_LEFT);
+  width += zathura_document_get_margin_crop(document, ZATHURA_MARGIN_RIGHT);
+  height += zathura_document_get_margin_crop(document, ZATHURA_MARGIN_TOP);
+  height += zathura_document_get_margin_crop(document, ZATHURA_MARGIN_BOTTOM);
+
+  cairo_surface_t *tmp_surface = cairo_image_surface_create(format, width, height);
+  if (tmp_surface == NULL) {
+    return false;
+  }
+
+  cairo_t* cairo = cairo_create(tmp_surface);
+  //cairo_t* cairo = cairo_create(surface);
   if (cairo == NULL) {
     return false;
   }
@@ -785,7 +801,29 @@ render_to_cairo_surface(cairo_surface_t* surface, zathura_page_t* page, ZathuraR
   const int err = zathura_page_render(page, cairo, false);
   zathura_renderer_unlock(renderer);
   cairo_restore(cairo);
+
   cairo_destroy(cairo);
+
+  cairo_t* cairo2 = cairo_create(surface);
+  if (cairo2 == NULL) {
+    return false;
+  }
+
+  cairo_save(cairo2);
+
+  cairo_set_source_rgb(cairo2, 1, 0, 0);
+  cairo_paint(cairo2);
+
+  cairo_set_source_surface(
+    cairo2,
+    tmp_surface,
+    -(int)zathura_document_get_margin_crop(document, ZATHURA_MARGIN_LEFT),
+    -(int)zathura_document_get_margin_crop(document, ZATHURA_MARGIN_TOP)
+  );
+  cairo_paint(cairo2);
+
+  cairo_restore(cairo2);
+  cairo_destroy(cairo2);
 
   return err == ZATHURA_ERROR_OK;
 }

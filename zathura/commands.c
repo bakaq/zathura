@@ -642,3 +642,38 @@ cmd_source(girara_session_t* session, girara_list_t* argument_list)
 
   return true;
 }
+
+bool
+cmd_margin_crop(girara_session_t* session, girara_list_t* argument_list)
+{
+  g_return_val_if_fail(session != NULL, false);
+  g_return_val_if_fail(session->global.data != NULL, false);
+  zathura_t* zathura = session->global.data;
+  if (zathura->document == NULL) {
+    girara_notify(session, GIRARA_ERROR, _("No document opened."));
+    return false;
+  }
+
+  if (girara_list_size(argument_list) != 4) {
+    girara_notify(session,
+      GIRARA_ERROR, _("Expected 4 arguments: top right bottom left."));
+    return false;
+  }
+
+  unsigned int margins[4] = {0, 0, 0, 0};
+  for (int i = 0; i < 4; i++) {
+    const char* value = girara_list_nth(argument_list, i);
+    if (value != NULL) {
+      margins[i] = atoi(value);
+      if (margins[i] == 0 && strcmp(value, "0") != 0) {
+        girara_notify(session, GIRARA_WARNING, _("Argument must be a number."));
+        return false;
+      }
+    }
+  }
+
+  zathura_document_set_margin_crop(zathura->document, margins);
+  render_all(zathura);
+
+  return true;
+}

@@ -61,6 +61,12 @@ zathura_page_new(zathura_document_t* document, unsigned int index, zathura_error
     }
     goto error_free;
   }
+  
+  page->width -= zathura_document_get_margin_crop(document, ZATHURA_MARGIN_LEFT);
+  page->width -= zathura_document_get_margin_crop(document, ZATHURA_MARGIN_RIGHT);
+  page->height -= zathura_document_get_margin_crop(document, ZATHURA_MARGIN_TOP);
+  page->height -= zathura_document_get_margin_crop(document, ZATHURA_MARGIN_BOTTOM);
+
 
   return page;
 
